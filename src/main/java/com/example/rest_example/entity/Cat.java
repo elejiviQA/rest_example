@@ -7,9 +7,9 @@ import lombok.*;
 @Table(name = "cats")
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 //refactor -> Delombok -> Constructors -> убрал id
 public class Cat {
 
@@ -21,12 +21,6 @@ public class Cat {
     private String name;
     private int age;
     private int weight;
-
-    public Cat(String name, int age, int weight) {
-        this.name = name;
-        this.age = age;
-        this.weight = weight;
-    }
 
     @Override
     public String toString() {

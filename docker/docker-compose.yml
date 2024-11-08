@@ -1,0 +1,22 @@
+services:
+  app:
+    image: '0fe0b9ca5dbe'
+    container_name: app
+    expose:
+      - '8081'
+    ports:
+      - '8081:8081'
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+    depends_on:
+      - db
+  db:
+    image: 'postgres'
+    container_name: db
+    expose:
+      - '5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
