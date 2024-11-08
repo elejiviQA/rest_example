@@ -1,48 +1,63 @@
 package com.example.rest_example.controller;
 
+import com.example.rest_example.DTO.CatDTO;
 import com.example.rest_example.entity.Cat;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.rest_example.repository.CatRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@Tag(name = "main_methods")
+@Slf4j
 @RestController
+@RequiredArgsConstructor
 public class MainController {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final CatRepo catRepo;
 
-    @GetMapping("/api/main")//сюда перенаправляются HTTP-методы GET
-    public String mainListener() {
-        return "Hello World";
+    @Operation(
+            summary = "добавляет новую кису в базу",
+            description = "получает DTO кисы и билдером собирает и сохраняет сущность в базу"
+    )
+    @PostMapping("/api/add")
+    public void addCat(@RequestBody CatDTO catDTO) {
+        log.info("New row: {}", catRepo.save(
+                Cat.builder()
+                        .name(catDTO.getName())
+                        .age(catDTO.getAge())
+                        .weight(catDTO.getWeight())
+                        .build()));
     }
 
-    @GetMapping("/api/cat")
-    public String giveCat() {
-        Cat cat = new Cat("Mickey", 5, 4);
-        String jsonData = null;
-        try {
-            jsonData = objectMapper.writeValueAsString(cat);
-        } catch (JsonProcessingException e) {
-            System.out.println("Json Cat Exception");
-        }
+    @SneakyThrows
+    @GetMapping("/api/all")
+    public List<Cat> getAllCats() {
 
-        return jsonData;
+        return catRepo.findAll();
     }
 
-    @PostMapping("/api/special")
-    public String giveSpecialCat(@RequestParam String name, @RequestParam int age, @RequestParam int weight) {
-        Cat cat = new Cat(name, age, weight);
-        String jsonData = null;
-        try {
-            jsonData = objectMapper.writeValueAsString(cat);
-        } catch (JsonProcessingException e) {
-            System.out.println("Json Cat Exception");
-        }
+    @GetMapping("/api")
+    public Cat getCat(@RequestParam int id) {
 
-        return jsonData;
+        return catRepo.findById(id).orElseThrow();
+    }
+
+    @DeleteMapping("/api")
+    public void deleteCat(@RequestParam int id) {
+
+        catRepo.deleteById(id);
+    }
+
+    @PutMapping("/api/add")
+    public String changeCat(@RequestBody Cat cat) {
+        if (!catRepo.existsById(cat.getId())) {
+            return "No such row";
+        }
+        return catRepo.save(cat).toString();
     }
 }

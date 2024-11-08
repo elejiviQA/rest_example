@@ -1,13 +1,15 @@
 package com.example.rest_example.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "cats")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 //refactor -> Delombok -> Constructors -> убрал id
 public class Cat {
 
@@ -15,7 +17,7 @@ public class Cat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name", length = 100, unique = true, nullable = false)
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
     private int age;
     private int weight;
@@ -26,6 +28,13 @@ public class Cat {
         this.weight = weight;
     }
 
-    public Cat() {
+    @Override
+    public String toString() {
+        return "Cat{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", weight=" + weight +
+                '}';
     }
 }
